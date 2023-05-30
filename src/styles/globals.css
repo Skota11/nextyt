@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "LSeedJP";
+  src: url(https://skota11.pages.dev/font/LINESeedJP_OTF_Bd.woff2) format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+* {
+  font-family: 'Poppins', "LSeedJP", sans-serif;
+  color: #333;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  /* 16:9 */
+  height: 0;
+}
+
+.video-container div iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 1000px;
+  height: 100%;
+  border-radius: 0.6rem;
+}
+
+#img_ {
+  height: 120px;
+}

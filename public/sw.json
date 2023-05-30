@@ -1,0 +1,16 @@
+{
+    "theme_color" : "#D6D6FF",
+    "background_color" : "#2D2D2D",
+    "display" : "standalone",
+    "scope" : "/",
+    "start_url" : "/",
+    "name" : "NextTube",
+    "short_name" : "nextyt",
+    "icons": [
+        {
+            "src": "/icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+    }
