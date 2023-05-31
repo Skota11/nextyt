@@ -8,8 +8,6 @@ import { useRouter } from 'next/router'
 
 import { supabase } from "../utils/supabase";
 
-import Header from "../components/header";
-
 export default function Home() {
     const router = useRouter()
     const { watch }: any = router.query
@@ -126,7 +124,6 @@ export default function Home() {
 
     return (
         <>
-            <Header />
             <main>
                 <div className='flex place-content-center bg-black'>
                     <div className='wrap'>
@@ -151,7 +148,7 @@ export default function Home() {
                 <div className='flex place-content-center gap-x-4'>
                     {searchHistories.map((history: any) => {
                         return <>
-                            {<button className='text-sm border-2 p-2 rounded-lg' onClick={async () => { await setserachQ(history); }}>{history}</button>}
+                            {<button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { await setserachQ(history); }}>{history}</button>}
                         </>
                     })}
                 </div>

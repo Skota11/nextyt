@@ -5,12 +5,15 @@ import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragm
 
 const inter = Inter({ subsets: ['latin'] })
 
+import { useRouter } from 'next/router'
+
 import { supabase } from "../utils/supabase";
 
-import Header from "../components/header";
 import OAuth from "../components/oauth";
 
 export default function Home() {
+  const router = useRouter()
+
   const onTwitterRegister = async () => {
     supabase.auth.signInWithOAuth({ provider: "twitter" });
   }
@@ -18,8 +21,8 @@ export default function Home() {
     supabase.auth.signInWithOAuth({ provider: "discord" });
   }
 
-  const [currentUser, setcurrentUser] = useState({ email: '' });
-  const [watchHistories, setWatchHistories]: any = useState([{ id: "", video: { thumbnails: { default: { url: "" } }, title: "" } }]);
+  const [currentUser, setcurrentUser] = useState({ id: '', email: '' });
+  const [watchHistories, setWatchHistories]: any = useState([{ id: "", video: { thumbnails: { high: { url: "" } }, title: "" } }]);
 
   // 現在ログインしているユーザーを取得する処理
   const getCurrentUser = async () => {
@@ -58,38 +61,66 @@ export default function Home() {
   }, [])
 
   const reverse = [...watchHistories].reverse();
+
+  const SearchDelete = async () => {
+    const { error } = await supabase
+      .from('searchHistory')
+      .delete()
+      .eq('uid', currentUser.id);
+    await supabase.from('searchHistory').upsert({
+      uid: currentUser.id,
+      content: []
+    })
+    router.reload()
+  }
+  async function WatchDelete() {
+    const { error } = await supabase
+      .from('watchHistory')
+      .delete()
+      .eq('uid', currentUser.id);
+    await supabase.from('watchHistory').upsert({
+      uid: currentUser.id,
+      content: []
+    })
+    router.reload()
+  }
+
   return (
     <>
-      <Header />
+
       {currentUser.email == '' ?
         <>
           <OAuth />
           <h1 className='text-center'>もしくはログインせずに使う</h1>
-          <p className='flex place-content-center'><Link href="/play" className='bg-black my-4 text-xl p-4 rounded-lg text-white' >Let&apos;s Play</Link></p>
+          <p className='flex place-content-center'><Link href="/play" className='bg-black my-4 text-lg p-4 rounded-lg text-white' >Let&apos;s Play</Link></p>
         </>
         :
         <>
           <div className=''>
-            <div className='p-4 max-w-screen-lg m-auto'>
-              <p className='mb-12'>{currentUser.email}でログイン中</p>
-              <p className='flex place-content-center'><Link href="/play" className='bg-black my-4 text-xl p-4 rounded-lg text-white' >Let&apos;s Play</Link></p>
+            <div className='p-4 max-w-screen-xl m-auto'>
+              <p className='flex place-content-center'><Link href="/play" className='bg-black my-4 text-lg p-4 rounded-lg text-white' >Let&apos;s Play</Link></p>
               <div className='mt-12 mb-4'>
-                <h1 className='text-xl border-b-4 w-fit'>プレイリスト</h1>
-              </div>
-              <div className='my-4'>
-                <h1 className='text-xl border-b-4 w-fit'>視聴履歴</h1>
-                <div className='grid grid-rows-4 gap-4 my-4'>
+                <h1 className='text-lg border-b-4 w-fit'>視聴履歴</h1>
+                <div className='grid gap-4 my-4'>
                   {
                     reverse.map((history: any) => {
+                      console.log(history)
                       return <>
                         <Link href={`/play?watch=${history.id}`}>
                           <div className='flex gap-x-4'>
-                            <img src={history.video.thumbnails.default.url} alt="" className='inline' />
+                            <img src={history.video.thumbnails.high.url} alt="" width="120px" className='inline' />
                             <p className='text-sm inline'>{history.video.title}</p>
                           </div>
                         </Link>
                       </>
                     })}
+                </div>
+              </div>
+              <div className='border-l-4 border-current pl-4 mt-8'>
+                <p className='text-sm'>{currentUser.email}でログイン中</p>
+                <div className='my-4 flex gap-x-4 mb-8 '>
+                  <button onClick={() => { SearchDelete(); }} className='border-2 border-current p-2 rounded-lg'>検索履歴を削除</button>
+                  <button onClick={() => { WatchDelete(); }} className='border-2 border-current p-2 rounded-lg'>再生履歴を削除</button>
                 </div>
               </div>
             </div>
