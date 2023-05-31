@@ -11,6 +11,8 @@ import { supabase } from "../utils/supabase";
 
 import OAuth from "../components/oauth";
 
+import Footer from "../components/footer";
+
 export default function Home() {
   const router = useRouter()
 
@@ -127,6 +129,7 @@ export default function Home() {
           </div>
         </>
       }
+      <Footer />
     </>
   )
 }
