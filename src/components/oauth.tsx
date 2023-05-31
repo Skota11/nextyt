@@ -1,4 +1,7 @@
 import { supabase } from "../utils/supabase";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { faDiscord, faTwitter } from "@fortawesome/free-brands-svg-icons";
 
 export default function Main() {
     const onTwitterRegister = async () => {
@@ -10,8 +13,8 @@ export default function Main() {
 
     return <>
         <div className='flex place-content-center py-6 gap-x-12'>
-            <button className='bg-black p-4 rounded-lg text-white' onClick={() => { onTwitterRegister(); }}>Twitterでログイン</button>
-            <button className='bg-black p-4 rounded-lg text-white' onClick={() => { onDiscordRegister(); }}>Discordでログイン</button>
+            <button className=' rounded-full border-2 p-4 text-lg border-current' onClick={() => { onTwitterRegister(); }}><FontAwesomeIcon icon={faTwitter} bounce className='mr-2' /> Twitterでログイン</button>
+            <button className=' rounded-full border-2 p-4 text-lg border-current' onClick={() => { onDiscordRegister(); }}><FontAwesomeIcon icon={faDiscord} bounce className='mr-2' /> Discordでログイン</button>
         </div>
     </>
 }

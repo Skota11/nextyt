@@ -8,6 +8,10 @@ import { useRouter } from 'next/router'
 
 import { supabase } from "../utils/supabase";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { faPlay, faSearch } from "@fortawesome/free-solid-svg-icons";
+
 export default function Home() {
     const router = useRouter()
     const { watch }: any = router.query
@@ -142,7 +146,7 @@ export default function Home() {
                 </div>
                 <div className='mb-2 flex place-content-center'>
                     <div>
-                        <input type="text" className='mr-4 p-2 rounded-md outline-0 bg-gray-300' onChange={(e) => { setserachQ(e.target.value) }} value={searchQ} /><button onClick={() => { getSearch() }} className='p-2 rounded-lg bg-gray-100'>検索</button>
+                        <input type="text" size={20} className='mr-4 p-2 rounded-md border-2 outline-0' placeholder='検索するワードを入力' onChange={(e) => { setserachQ(e.target.value) }} value={searchQ} /><button onClick={() => { getSearch() }} className='p-2 rounded-lg bg-gray-100'><FontAwesomeIcon icon={faSearch} className='mr-2' /> 検索</button>
                     </div>
                 </div>
                 <div className='flex place-content-center gap-x-4'>

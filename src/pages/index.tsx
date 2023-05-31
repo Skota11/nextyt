@@ -3,6 +3,10 @@ import Link from "next/link";
 import { Inter } from 'next/font/google'
 import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { faClockRotateLeft, faPlay, faSearch } from "@fortawesome/free-solid-svg-icons";
+
 const inter = Inter({ subsets: ['latin'] })
 
 import { useRouter } from 'next/router'
@@ -94,15 +98,20 @@ export default function Home() {
         <>
           <OAuth />
           <h1 className='text-center'>もしくはログインせずに使う</h1>
-          <p className='flex place-content-center'><Link href="/play" className='bg-black my-4 text-lg p-4 rounded-lg text-white' >Let&apos;s Play</Link></p>
+          <div className='flex place-content-center'>
+            <Link href="/play" className='my-8 rounded-full border-2 p-4 text-lg border-current' ><FontAwesomeIcon icon={faPlay} bounce className='mr-2' /> Play</Link>
+          </div>
         </>
         :
         <>
           <div className=''>
             <div className='p-4 max-w-screen-xl m-auto'>
-              <p className='flex place-content-center'><Link href="/play" className='bg-black my-4 text-lg p-4 rounded-lg text-white' >Let&apos;s Play</Link></p>
+              <div className='max-w-screen-lg m-auto mt-8 mb-4'>
+                <p className='mb-8 text-lg^'><FontAwesomeIcon icon={faSearch} className='mr-2' />検索して再生</p>
+                <Link href="/play" className='my-8 rounded-full border-2 p-4 text-lg border-current' ><FontAwesomeIcon icon={faPlay} bounce className='mr-2' /> Play</Link>
+              </div>
               <div className='mt-12 mb-4'>
-                <h1 className='text-lg border-b-4 w-fit'>視聴履歴</h1>
+                <h1 className='text-lg'><FontAwesomeIcon icon={faClockRotateLeft} className='mr-2' />再生履歴</h1>
                 <div className='grid gap-4 my-4'>
                   {
                     reverse.map((history: any) => {
@@ -121,8 +130,8 @@ export default function Home() {
               <div className='border-l-4 border-current pl-4 mt-8'>
                 <p className='text-sm'>{currentUser.email}でログイン中</p>
                 <div className='my-4 flex gap-x-4 mb-8 '>
-                  <button onClick={() => { SearchDelete(); }} className='border-2 border-current p-2 rounded-lg'>検索履歴を削除</button>
-                  <button onClick={() => { WatchDelete(); }} className='border-2 border-current p-2 rounded-lg'>再生履歴を削除</button>
+                  <button onClick={() => { SearchDelete(); }} className='border-2 border-current p-4 rounded-full'>検索履歴を削除</button>
+                  <button onClick={() => { WatchDelete(); }} className='border-2 border-current p-4 rounded-full'>再生履歴を削除</button>
                 </div>
               </div>
             </div>
