@@ -146,7 +146,12 @@ export default function Home() {
                 </div>
                 <div className='mb-2 flex place-content-center'>
                     <div>
-                        <input type="text" className='mr-4 p-2 rounded-md border-2 outline-0' placeholder='検索するワードを入力' onChange={(e) => { setserachQ(e.target.value) }} value={searchQ} /><button onClick={() => { getSearch() }} className='p-2 rounded-lg bg-gray-100'><FontAwesomeIcon icon={faSearch} className='mr-2' /> 検索</button>
+                        <input type="text" onKeyPress={(e) => {
+                            console.log(e)
+                            if (e.code == "Enter") {
+                                getSearch()
+                            }
+                        }} className='mr-4 p-2 rounded-md border-2 outline-0' placeholder='検索するワードを入力' onChange={(e) => { setserachQ(e.target.value) }} value={searchQ} /><button onClick={() => { getSearch() }} className='p-2 rounded-lg bg-gray-100'><FontAwesomeIcon icon={faSearch} className='mr-2' /> 検索</button>
                     </div>
                 </div>
                 <div className='flex place-content-center gap-x-4'>
