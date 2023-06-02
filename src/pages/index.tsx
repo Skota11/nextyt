@@ -5,7 +5,7 @@ import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragm
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faClockRotateLeft, faPlay, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightFromBracket, faClockRotateLeft, faPlay, faSearch, faTrash, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -91,6 +91,12 @@ export default function Home() {
     router.reload()
   }
 
+  const LogOut = async () => {
+
+    const { error } = await supabase.auth.signOut()
+    router.reload()
+
+  }
   return (
     <>
 
@@ -128,11 +134,13 @@ export default function Home() {
                 </div>
               </div>
               <div className='border-l-4 border-current pl-4 mt-8'>
+                <h1 className='text-lg my-4'><FontAwesomeIcon icon={faUser} className='mr-2' />アカウント</h1>
                 <p className='text-sm'>{currentUser.email}でログイン中</p>
                 <div className='my-4 flex gap-x-4 mb-8 '>
-                  <button onClick={() => { SearchDelete(); }} className='border-2 border-current p-4 rounded-full'>検索履歴を削除</button>
-                  <button onClick={() => { WatchDelete(); }} className='border-2 border-current p-4 rounded-full'>再生履歴を削除</button>
+                  <button onClick={() => { SearchDelete(); }} className='border-2 border-current p-4 rounded-full'><FontAwesomeIcon icon={faTrash} className='mr-2' />検索履歴を削除</button>
+                  <button onClick={() => { WatchDelete(); }} className='border-2 border-current p-4 rounded-full'><FontAwesomeIcon icon={faTrash} className='mr-2' />再生履歴を削除</button>
                 </div>
+                <button onClick={() => { LogOut(); }} className='border-2 border-red-600 bg-red-100 p-4 rounded-full'><FontAwesomeIcon icon={faArrowRightFromBracket} className='mr-2' />ログアウト</button>
               </div>
             </div>
           </div>
