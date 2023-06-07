@@ -7,6 +7,7 @@ export default function Document() {
         <link rel="manifest" href="sw.json" />
         <link rel="apple-touch-icon" href="/icon.png"></link>
         <meta name="theme-color" content="#fff" />
+        <title>NextTube</title>
       </Head>
       <body>
         <Main />
