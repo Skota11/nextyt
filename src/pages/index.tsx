@@ -3,9 +3,11 @@ import Link from "next/link";
 import { Inter } from 'next/font/google'
 import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
 
+import Swal from 'sweetalert2'
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faArrowRightFromBracket, faClockRotateLeft, faPlay, faSearch, faTrash, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightFromBracket, faClockRotateLeft, faList, faPlay, faSearch, faTrash, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,19 +18,13 @@ import { supabase } from "../utils/supabase";
 import OAuth from "../components/oauth";
 
 import Footer from "../components/footer";
+import { toast } from 'react-toastify';
 
 export default function Home() {
   const router = useRouter()
-
-  const onTwitterRegister = async () => {
-    supabase.auth.signInWithOAuth({ provider: "twitter" });
-  }
-  const onDiscordRegister = async () => {
-    supabase.auth.signInWithOAuth({ provider: "discord" });
-  }
-
   const [currentUser, setcurrentUser] = useState({ id: '', email: '' });
   const [watchHistories, setWatchHistories]: any = useState([{ id: "", video: { thumbnails: { high: { url: "" } }, title: "" } }]);
+  const [myPlaylists, setMyPlaylists]: any = useState([{ id: "", name: "" }]);
 
   // 現在ログインしているユーザーを取得する処理
   const getCurrentUser = async () => {
@@ -42,6 +38,7 @@ export default function Home() {
       setcurrentUser(user)
 
       await getWatchHistory(user.id);
+      await getMyPlaylists(user.id);
     }
   }
 
@@ -61,6 +58,15 @@ export default function Home() {
     }
   }
 
+  const getMyPlaylists = async (id: any) => {
+    let { data }: { data: any } = await supabase
+      .from('playlists')
+      .select()
+      .eq('author', id);
+
+    setMyPlaylists(data);
+  }
+
   // HeaderコンポーネントがレンダリングされたときにgetCurrentUser関数が実行される
   useEffect(() => {
     getCurrentUser()
@@ -68,27 +74,78 @@ export default function Home() {
 
   const reverse = [...watchHistories].reverse();
 
-  const SearchDelete = async () => {
-    const { error } = await supabase
-      .from('searchHistory')
-      .delete()
-      .eq('uid', currentUser.id);
-    await supabase.from('searchHistory').upsert({
-      uid: currentUser.id,
-      content: []
+  const onNewPlaylist = () => {
+
+    Swal.fire({
+      title: '作成するプレイリストの名前を入力してください',
+      input: 'text',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: '作成',
+      showLoaderOnConfirm: true,
+      preConfirm: async (value) => {
+        const { error } = await supabase
+          .from('playlists')
+          .insert({ name: value, content: [], author: currentUser.id, public: true })
+        return true;
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (result) {
+          toast.success("プレイリストを作成しました")
+        }
+      }
     })
-    router.reload()
+  }
+
+  const SearchDelete = async () => {
+    Swal.fire({
+      title: '本当に削除しますか？',
+      text: "この操作は取り消せません",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '削除'
+    }).then(async (result: any) => {
+      if (result.isConfirmed) {
+        const { error } = await supabase
+          .from('searchHistory')
+          .delete()
+          .eq('uid', currentUser.id);
+        await supabase.from('searchHistory').upsert({
+          uid: currentUser.id,
+          content: []
+        })
+        router.reload()
+      }
+    })
   }
   async function WatchDelete() {
-    const { error } = await supabase
-      .from('watchHistory')
-      .delete()
-      .eq('uid', currentUser.id);
-    await supabase.from('watchHistory').upsert({
-      uid: currentUser.id,
-      content: []
+    Swal.fire({
+      title: '本当に削除しますか？',
+      text: "この操作は取り消せません",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: '削除'
+    }).then(async (result: any) => {
+      if (result.isConfirmed) {
+        const { error } = await supabase
+          .from('watchHistory')
+          .delete()
+          .eq('uid', currentUser.id);
+        await supabase.from('watchHistory').upsert({
+          uid: currentUser.id,
+          content: []
+        })
+        router.reload()
+      }
     })
-    router.reload()
   }
 
   const LogOut = async () => {
@@ -117,6 +174,19 @@ export default function Home() {
                 <Link href="/play" className='my-8 rounded-full border-2 p-4 text-lg border-current' ><FontAwesomeIcon icon={faPlay} bounce className='mr-2' /> Play</Link>
               </div>
               <div className='mt-12 mb-4'>
+                <h1 className='text-lg'><FontAwesomeIcon icon={faList} className='mr-2' />プレイリスト</h1>
+                <button onClick={() => { onNewPlaylist(); }}>プレイリストを作成</button>
+                <div className='my-2'>
+                  {
+                    myPlaylists.map((playlist: any) => {
+                      console.log(playlist)
+                      return <p className='my-2 text-lg'>
+                        <Link className='border-l-4 border-current pl-2' href={`/playlist/${playlist.id}`}>{playlist.name}</Link>
+                      </p>
+                    })
+                  }
+                </div>
+                <hr className='my-4' />
                 <h1 className='text-lg'><FontAwesomeIcon icon={faClockRotateLeft} className='mr-2' />再生履歴</h1>
                 <div className='grid gap-4 my-4'>
                   {

@@ -1,6 +1,7 @@
 // 'use client'
 import Image from 'next/image'
 import YouTube from "react-youtube";
+import { toast } from "react-toastify";
 import Link from 'next/link';
 
 import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
@@ -20,6 +21,7 @@ export default function Home() {
     const [result, setResult]: any = useState();
     const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "" });
     const [ytid, setYtid] = useState(watch);
+    const [selectPlaylist, setSelectPlaylist] = useState();
 
     const opts = {
         width: "560",
@@ -84,6 +86,7 @@ export default function Home() {
 
             await getSearchHistory(user.id);
             await getWatchHistory(user.id);
+            await getMyPlaylists(user.id);
         }
     }
     const getSearchHistory = async (id: any) => {
@@ -115,6 +118,37 @@ export default function Home() {
             setWatchHistories(data[0].content);
         }
     }
+
+    const getMyPlaylists = async (id: any) => {
+        let { data }: { data: any } = await supabase
+            .from('playlists')
+            .select()
+            .eq('author', id);
+
+        setMyPlaylists(data);
+    }
+
+    const addPlaylist = async () => {
+        const res = await (await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${ytid}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo`)).json();
+        if (selectPlaylist !== "") {
+            console.log(selectPlaylist)
+            let { data }: { data: any } = await supabase
+                .from('playlists')
+                .select("content")
+                .eq('id', selectPlaylist);
+
+            console.log(data)
+            const jsondata: any = { id: ytid, video: res.items[0].snippet };
+            console.log(data.content)
+            data[0].content.push(jsondata)
+            let { error } = await supabase.from('playlists').upsert({
+                id: selectPlaylist,
+                content: data[0].content
+            })
+            toast.success("プレイリストに追加しました。")
+        }
+    }
+
     useEffect(() => {
         getCurrentUser();
         if (watch !== undefined) {
@@ -125,7 +159,9 @@ export default function Home() {
     //検索履歴
     const [searchHistories, setSearchHistories]: any = useState([]);
     const [watchHistories, setWatchHistories]: any = useState([]);
+    const [myPlaylists, setMyPlaylists]: any = useState();
 
+    const [addPlaylistMenuOpened, setaddPlaylistMenuOpened] = useState(false);
     return (
         <>
             <main>
@@ -141,43 +177,68 @@ export default function Home() {
                     </div>
                 </div>
                 <div className='px-4 py-2 '>
-                    <h1>{about.title}</h1>
+                    <h1><a href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
                     <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm' rel="noopener noreferrer">{about.channelTitle}</a>
-                </div>
-                <div className='mb-2 flex place-content-center'>
-                    <div>
-                        <input type="text" onKeyPress={(e) => {
-                            console.log(e)
-                            if (e.code == "Enter") {
-                                getSearch()
-                            }
-                        }} className='mr-4 p-2 rounded-md border-2 outline-0' placeholder='検索するワードを入力' onChange={(e) => { setserachQ(e.target.value) }} value={searchQ} /><button onClick={() => { getSearch() }} className='p-2 rounded-lg bg-gray-100'><FontAwesomeIcon icon={faSearch} className='mr-2' /> 検索</button>
-                    </div>
-                </div>
-                <div className='flex place-content-center gap-x-4'>
-                    {searchHistories.map((history: any) => {
-                        return <>
-                            {<button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { await setserachQ(history); }}>{history}</button>}
-                        </>
-                    })}
-                </div>
-                <div className='mb-4 mt-2 px-4'>
                     {
-                        result ? result.map((item: { id: { videoId: any; }; snippet: { thumbnails: { high: { url: string | undefined; }; }; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; channelTitle: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => {
-                            return (<>
-                                <hr />
-                                <a className='block my-4 flex gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
-                                    <img className='inline' src={item.snippet.thumbnails.high.url} alt="" id="img_" />
-                                    <div className='inline'>
-                                        <p>{item.snippet.title} </p>
-                                        <p>{item.snippet.channelTitle} </p>
-                                    </div>
-                                </a>
-                            </>)
-                        })
-                            :
-                            <></>
+                        currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current mx-4' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリストに追加</button> : <></>
                     }
+                    {
+                        addPlaylistMenuOpened ?
+                            <>
+                                <div className='mt-2'>
+                                    プレイリスト:
+                                    <select onChange={(e: any) => { setSelectPlaylist(e.target.value) }} name="playlist" id="playlistDom">
+                                        <option value="">選択していません</option>
+                                        {
+                                            myPlaylists.map((playlist: any) => {
+                                                console.log(playlist)
+                                                return <option value={playlist.id}>{playlist.name}</option>
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                                <button className='border-2 p-2 rounded-lg text-xs border-current mt-2' onClick={() => { addPlaylist(); }}>追加</button>
+                            </> : <></>
+                    }
+                </div>
+                <div className='flex place-content-center'>
+                    <div className='lg:w-3/4' id="検索系">
+                        <div className='mb-2 flex place-content-center'>
+                            <div>
+                                <input type="text" onKeyPress={(e) => {
+                                    console.log(e)
+                                    if (e.code == "Enter") {
+                                        getSearch()
+                                    }
+                                }} className='mr-4 p-2 rounded-md border-2 outline-0' placeholder='検索するワードを入力' onChange={(e) => { setserachQ(e.target.value) }} value={searchQ} /><button onClick={() => { getSearch() }} className='p-2 rounded-lg bg-gray-100'><FontAwesomeIcon icon={faSearch} className='mr-2' /> 検索</button>
+                            </div>
+                        </div>
+                        <div className='flex place-content-center gap-x-4'>
+                            {searchHistories.map((history: any) => {
+                                return <>
+                                    {<button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { await setserachQ(history); }}>{history}</button>}
+                                </>
+                            })}
+                        </div>
+                        <div className='mb-4 mt-2 px-4'>
+                            {
+                                result ? result.map((item: { id: { videoId: any; }; snippet: { thumbnails: { high: { url: string | undefined; }; }; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; channelTitle: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => {
+                                    return (<>
+                                        <hr />
+                                        <a className='block my-4 flex gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
+                                            <img className='inline' src={item.snippet.thumbnails.high.url} alt="" id="img_" />
+                                            <div className='inline'>
+                                                <p>{item.snippet.title} </p>
+                                                <p>{item.snippet.channelTitle} </p>
+                                            </div>
+                                        </a>
+                                    </>)
+                                })
+                                    :
+                                    <></>
+                            }
+                        </div>
+                    </div>
                 </div>
             </main>
         </>
