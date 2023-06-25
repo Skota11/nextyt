@@ -4,7 +4,7 @@ import YouTube from "react-youtube";
 import { toast } from "react-toastify";
 import Link from 'next/link';
 
-import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
+import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
 import { useRouter } from 'next/router'
 
 import { supabase } from "../utils/supabase";
@@ -19,7 +19,7 @@ export default function Home() {
 
     const [searchQ, setserachQ] = useState("")
     const [result, setResult]: any = useState();
-    const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "" });
+    const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "", description: "" });
     const [ytid, setYtid] = useState(watch);
     const [selectPlaylist, setSelectPlaylist] = useState();
 
@@ -162,6 +162,7 @@ export default function Home() {
     const [myPlaylists, setMyPlaylists]: any = useState();
 
     const [addPlaylistMenuOpened, setaddPlaylistMenuOpened] = useState(false);
+    const [InfoMenuOpened, setInfoMenuOpened] = useState(false);
     return (
         <>
             <main>
@@ -181,13 +182,26 @@ export default function Home() {
                         <h1><a href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
                         <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm text-slate-600' rel="noopener noreferrer">{about.channelTitle}</a>
                     </div>
+                    <div className='flex gap-x-2'>
+                        {
+                            ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄を{InfoMenuOpened ? "閉じる" : "開く"}</button> : <></>
+                        }
+                        {
+                            currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリストに追加</button> : <></>
+                        }
+                    </div>
                     {
-                        currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリストに追加</button> : <></>
+                        InfoMenuOpened ?
+                            <>
+                                <div className='mt-2 border-l-4 border-current pl-4'>
+                                    <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
+                                </div>
+                            </> : <></>
                     }
                     {
                         addPlaylistMenuOpened ?
                             <>
-                                <div className='mt-2'>
+                                <div className='mt-2 border-l-4 border-current pl-4'>
                                     プレイリスト:
                                     <select onChange={(e: any) => { setSelectPlaylist(e.target.value) }} name="playlist" id="playlistDom">
                                         <option value="">選択していません</option>
@@ -198,8 +212,8 @@ export default function Home() {
                                             })
                                         }
                                     </select>
+                                    <p><button className='border-2 p-2 rounded-lg text-xs border-current mt-2' onClick={() => { addPlaylist(); }}>追加</button></p>
                                 </div>
-                                <button className='border-2 p-2 rounded-lg text-xs border-current mt-2' onClick={() => { addPlaylist(); }}>追加</button>
                             </> : <></>
                     }
                 </div>

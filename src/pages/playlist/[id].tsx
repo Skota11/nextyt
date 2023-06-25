@@ -17,7 +17,7 @@ export default function Home() {
     const router = useRouter()
     const { id }: any = router.query
 
-    const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "" });
+    const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "", description: "" });
     const [playlistData, setPlaylistData] = useState({ name: "", content: [] });
     const [ytid, setYtid] = useState();
 
@@ -111,6 +111,7 @@ export default function Home() {
     const [searchHistories, setSearchHistories]: any = useState([]);
 
     const [TitleName, setTitleName] = useState(playlistData.name);
+    const [InfoMenuOpened, setInfoMenuOpened] = useState(false);
     return (
         <>
             <main>
@@ -127,7 +128,20 @@ export default function Home() {
                 </div>
                 <div className='px-4 py-2 '>
                     <h1><a href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
-                    <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm' rel="noopener noreferrer">{about.channelTitle}</a>
+                    <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm text-slate-600' rel="noopener noreferrer">{about.channelTitle}</a>
+                    <div>
+                        {
+                            ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄を{InfoMenuOpened ? "閉じる" : "開く"}</button> : <></>
+                        }
+                    </div>
+                    {
+                        InfoMenuOpened ?
+                            <>
+                                <div className='mt-2 border-l-4 border-current pl-4'>
+                                    <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
+                                </div>
+                            </> : <></>
+                    }
                 </div>
                 <div className='flex place-content-center'>
                     <div className='lg:w-3/4 px-4'>
