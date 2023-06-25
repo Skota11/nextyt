@@ -180,7 +180,7 @@ export default function Home() {
                   {
                     myPlaylists.map((playlist: any) => {
                       console.log(playlist)
-                      return <p className='my-2 text-lg'>
+                      return <p className='my-2 text-lg' key={playlist.id}>
                         <Link className='border-l-4 border-current pl-2' href={`/playlist/${playlist.id}`}>{playlist.name}</Link>
                       </p>
                     })
