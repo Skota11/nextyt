@@ -192,7 +192,7 @@ export default function Home() {
                                         {
                                             myPlaylists.map((playlist: any) => {
                                                 console.log(playlist)
-                                                return <option value={playlist.id}>{playlist.name}</option>
+                                                return <option key={playlist.id} value={playlist.id}>{playlist.name}</option>
                                             })
                                         }
                                     </select>
