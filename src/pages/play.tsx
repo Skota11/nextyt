@@ -177,10 +177,12 @@ export default function Home() {
                     </div>
                 </div>
                 <div className='px-4 py-2 '>
-                    <h1><a href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
-                    <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm' rel="noopener noreferrer">{about.channelTitle}</a>
+                    <div>
+                        <h1><a href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
+                        <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm text-slate-600' rel="noopener noreferrer">{about.channelTitle}</a>
+                    </div>
                     {
-                        currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current mx-4' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリストに追加</button> : <></>
+                        currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリストに追加</button> : <></>
                     }
                     {
                         addPlaylistMenuOpened ?
