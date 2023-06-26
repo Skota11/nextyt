@@ -131,15 +131,11 @@ export default function Home() {
     const addPlaylist = async () => {
         const res = await (await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${ytid}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo`)).json();
         if (selectPlaylist !== "") {
-            console.log(selectPlaylist)
             let { data }: { data: any } = await supabase
                 .from('playlists')
                 .select("content")
                 .eq('id', selectPlaylist);
-
-            console.log(data)
             const jsondata: any = { id: ytid, video: res.items[0].snippet };
-            console.log(data.content)
             data[0].content.push(jsondata)
             let { error } = await supabase.from('playlists').upsert({
                 id: selectPlaylist,
@@ -207,7 +203,6 @@ export default function Home() {
                                         <option value="">選択していません</option>
                                         {
                                             myPlaylists.map((playlist: any) => {
-                                                console.log(playlist)
                                                 return <option key={playlist.id} value={playlist.id}>{playlist.name}</option>
                                             })
                                         }
@@ -222,7 +217,6 @@ export default function Home() {
                         <div className='mb-2 flex place-content-center'>
                             <div>
                                 <input type="text" onKeyPress={(e) => {
-                                    console.log(e)
                                     if (e.code == "Enter") {
                                         getSearch()
                                     }

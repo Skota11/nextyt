@@ -179,7 +179,6 @@ export default function Home() {
                 <div className='my-2'>
                   {
                     myPlaylists.map((playlist: any) => {
-                      console.log(playlist)
                       return <p className='my-2 text-lg' key={playlist.id}>
                         <Link className='border-l-4 border-current pl-2' href={`/playlist/${playlist.id}`}>{playlist.name}</Link>
                       </p>
@@ -191,7 +190,6 @@ export default function Home() {
                 <div className='grid gap-4 my-4'>
                   {
                     reverse.map((history: any) => {
-                      console.log(history)
                       return <>
                         <Link href={`/play?watch=${history.id}`}>
                           <div className='flex gap-x-4'>

@@ -60,13 +60,10 @@ export default function Home() {
 
     const getPlaylist = async () => {
         if (id !== undefined) {
-            console.log(id)
             let { data }: { data: any } = await supabase
                 .from('playlists')
                 .select()
                 .eq('id', id);
-
-            console.log(data)
 
             if (data !== null) {
                 if (data[0].content.length == 0) {
@@ -150,7 +147,6 @@ export default function Home() {
                         <div className='grid gap-4 my-4'>
                             {
                                 reverse.map((data: any) => {
-                                    console.log(data);
                                     return <>
                                         <a href="#" onClick={() => { Select(data.id); }}>
                                             <div className='flex gap-x-4'>
