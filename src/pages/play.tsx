@@ -11,7 +11,7 @@ import { supabase } from "../utils/supabase";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faPlay, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faPlay, faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 export default function Home() {
     const router = useRouter()
@@ -180,10 +180,10 @@ export default function Home() {
                     </div>
                     <div className='flex gap-x-2'>
                         {
-                            ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄を{InfoMenuOpened ? "閉じる" : "開く"}</button> : <></>
+                            ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄<span className='ml-2'>{InfoMenuOpened ? <FontAwesomeIcon icon={faChevronDown} /> : <FontAwesomeIcon icon={faChevronUp} />}</span></button> : <></>
                         }
                         {
-                            currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリストに追加</button> : <></>
+                            currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリスト<FontAwesomeIcon className='ml-2' icon={faPlus} /></button> : <></>
                         }
                     </div>
                     {
