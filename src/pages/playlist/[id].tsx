@@ -10,7 +10,7 @@ import { supabase } from "../../utils/supabase";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faPlay, faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faPlay, faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2';
 
 export default function Home() {
