@@ -3,7 +3,7 @@ import Image from 'next/image'
 import YouTube from "react-youtube";
 import Link from 'next/link';
 
-import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/router'
 
 import { supabase } from "../../utils/supabase";
