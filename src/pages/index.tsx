@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Inter } from 'next/font/google'
 import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
 
+import { Skeleton } from '@mui/material';
+
 import Swal from 'sweetalert2'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -189,16 +191,20 @@ export default function Home() {
                 <h1 className='text-lg'><FontAwesomeIcon icon={faClockRotateLeft} className='mr-2' />再生履歴</h1>
                 <div className='grid gap-4 my-4'>
                   {
-                    reverse.map((history: any) => {
-                      return <>
-                        <Link href={`/play?watch=${history.id}`}>
-                          <div className='flex gap-x-4'>
-                            <img src={history.video.thumbnails.high.url} alt="" width="120px" className='inline' />
-                            <p className='text-sm inline'>{history.video.title}</p>
-                          </div>
-                        </Link>
-                      </>
-                    })}
+                    reverse.length == 0 ? <>
+                      <Skeleton variant="rectangular" width={210} height={60} />
+                    </>
+                      :
+                      reverse.map((history: any) => {
+                        return <>
+                          <Link href={`/play?watch=${history.id}`}>
+                            <div className='flex gap-x-4'>
+                              <img src={`http://i.ytimg.com/vi/${history.id}/mqdefault.jpg`} alt="" width="120px" className='inline rounded-md' />
+                              <p className='text-sm inline'>{history.video.title}</p>
+                            </div>
+                          </Link>
+                        </>
+                      })}
                 </div>
               </div>
               <div className='border-l-4 border-current pl-4 mt-8'>

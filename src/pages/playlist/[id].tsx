@@ -2,9 +2,10 @@
 import Image from 'next/image'
 import YouTube from "react-youtube";
 import Link from 'next/link';
-
-import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/router'
+
+import { Skeleton } from '@mui/material';
 
 import { supabase } from "../../utils/supabase";
 
@@ -98,7 +99,7 @@ export default function Home() {
         })
     }
 
-    const reverse = [...playlistData.content].reverse();
+    const reverse: any = [...playlistData.content].reverse();
     useEffect(() => {
         getCurrentUser();
         getPlaylist();
@@ -137,7 +138,9 @@ export default function Home() {
                                 <div className='mt-2 border-l-4 border-current pl-4'>
                                     <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
                                 </div>
-                            </> : <></>
+                            </> :
+                            <>
+                            </>
                     }
                 </div>
                 <div className='flex place-content-center'>
@@ -145,17 +148,20 @@ export default function Home() {
                         <input type="text" className='text-lg' value={TitleName} onChange={(e) => { setTitleName(e.target.value); onTitleNameChange(e.target.value) }} />
                         <button onClick={() => { onClickDelete(); }}><FontAwesomeIcon icon={faTrash} /></button>
                         <div className='grid gap-4 my-4'>
-                            {
+                            {reverse.length == 0 ? <>
+                                <Skeleton variant="rectangular" width={210} height={60} />
+                            </> :
                                 reverse.map((data: any) => {
                                     return <>
                                         <a href="#" onClick={() => { Select(data.id); }}>
                                             <div className='flex gap-x-4'>
-                                                <img src={data.video.thumbnails.high.url} alt="" width="120px" className='inline' />
+                                                <img src={`http://i.ytimg.com/vi/${data.id}/mqdefault.jpg`} alt="" width="200px" className='inline rounded-md' />
                                                 <p className='text-sm inline'>{data.video.title}</p>
                                             </div>
                                         </a>
                                     </>
-                                })}
+                                })
+                            }
                         </div>
                     </div>
                 </div>
