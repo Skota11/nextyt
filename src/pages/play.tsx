@@ -236,7 +236,7 @@ export default function Home() {
                                     return (<>
                                         <hr />
                                         <a className='block my-4 flex gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
-                                            <img src={`http://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`} alt="" width="120px" className='inline rounded-md' />
+                                            <img src={`https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`} alt="" width="120px" className='inline rounded-md' />
                                             <div className='inline'>
                                                 <p>{item.snippet.title} </p>
                                                 <p>{item.snippet.channelTitle} </p>

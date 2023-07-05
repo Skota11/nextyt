@@ -199,7 +199,7 @@ export default function Home() {
                         return <>
                           <Link href={`/play?watch=${history.id}`}>
                             <div className='flex gap-x-4'>
-                              <img src={`http://i.ytimg.com/vi/${history.id}/mqdefault.jpg`} alt="" width="120px" className='inline rounded-md' />
+                              <img src={`https://i.ytimg.com/vi/${history.id}/mqdefault.jpg`} alt="" width="120px" className='inline rounded-md' />
                               <p className='text-sm inline'>{history.video.title}</p>
                             </div>
                           </Link>
