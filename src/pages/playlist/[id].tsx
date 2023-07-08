@@ -156,7 +156,7 @@ export default function Home() {
                                     return <>
                                         <a href="#" onClick={() => { Select(data.id); }}>
                                             <div className='flex gap-x-4'>
-                                                <img src={`https://i.ytimg.com/vi/${data.id}/mqdefault.jpg`} alt="" width="120px" className='inline rounded-md' />
+                                                <Image src={`https://i.ytimg.com/vi/${data.id}/mqdefault.jpg`} alt="" width={120} height={67.5} className='inline rounded-md' />
                                                 <p className='text-sm inline'>{data.video.title}</p>
                                             </div>
                                         </a>
