@@ -178,7 +178,7 @@ export default function Home() {
               <div className='mt-12 mb-4'>
                 <h1 className='text-lg'><FontAwesomeIcon icon={faList} className='mr-2' />プレイリスト</h1>
                 <button onClick={() => { onNewPlaylist(); }}>プレイリストを作成</button>
-                <div className='my-2'>
+                <div className='mt-2 mb-6'>
                   {
                     myPlaylists.map((playlist: any) => {
                       return <p className='my-2 text-lg' key={playlist.id}>
@@ -187,7 +187,6 @@ export default function Home() {
                     })
                   }
                 </div>
-                <hr className='my-4' />
                 <h1 className='text-lg'><FontAwesomeIcon icon={faClockRotateLeft} className='mr-2' />再生履歴</h1>
                 <div className='grid gap-4 my-4'>
                   {
@@ -197,10 +196,14 @@ export default function Home() {
                       :
                       reverse.map((history: any) => {
                         return <>
+                          <hr />
                           <Link href={`/play?watch=${history.id}`}>
-                            <div className='flex items-start gap-x-4'>
+                            <div className='flex items-start gap-x-4 break-all'>
                               <Image src={`https://i.ytimg.com/vi/${history.id}/mqdefault.jpg`} alt="" width={120} height={67.5} className='inline rounded-md' />
-                              <p className='text-sm inline'>{history.video.title}</p>
+                              <div className='inline'>
+                                <p className='inline'>{history.video.title}</p>
+                                <p className='text-slate-600 text-sm'>{history.video.channelTitle}</p>
+                              </div>
                             </div>
                           </Link>
                         </>

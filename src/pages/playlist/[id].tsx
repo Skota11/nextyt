@@ -126,7 +126,7 @@ export default function Home() {
                     </div>
                 </div>
                 <div className='px-4 py-2 '>
-                    <h1><a href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
+                    <h1><a className='break-all' href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
                     <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm text-slate-600' rel="noopener noreferrer">{about.channelTitle}</a>
                     <div>
                         {
@@ -154,10 +154,14 @@ export default function Home() {
                             </> :
                                 reverse.map((data: any) => {
                                     return <>
+                                        <hr />
                                         <a href="#" onClick={() => { Select(data.id); }}>
-                                            <div className='flex items-start gap-x-4'>
+                                            <div className='flex break-all items-start gap-x-4'>
                                                 <Image src={`https://i.ytimg.com/vi/${data.id}/mqdefault.jpg`} alt="" width={120} height={67.5} className='inline rounded-md' />
-                                                <p className='text-sm inline'>{data.video.title}</p>
+                                                <div className="inline">
+                                                    <p className='text-sm inline'>{data.video.title}</p>
+                                                    <p className='text-slate-600 text-sm'>{data.video.channelTitle}</p>
+                                                </div>
                                             </div>
                                         </a>
                                     </>

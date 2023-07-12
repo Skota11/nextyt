@@ -175,7 +175,7 @@ export default function Home() {
                 </div>
                 <div className='px-4 py-2 '>
                     <div>
-                        <h1><a href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
+                        <h1><a className='break-all' href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
                         <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm text-slate-600' rel="noopener noreferrer">{about.channelTitle}</a>
                     </div>
                     <div className='flex gap-x-2'>
@@ -235,11 +235,11 @@ export default function Home() {
                                 result ? result.map((item: { id: { videoId: any; }; snippet: { thumbnails: { high: { url: string | undefined; }; }; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; channelTitle: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => {
                                     return (<>
                                         <hr />
-                                        <a className='block my-4 flex items-start gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
+                                        <a className='block my-4 break-all flex items-start gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
                                             <Image src={`https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`} alt="" width={120} height={67.5} className='inline rounded-md' />
                                             <div className='inline'>
                                                 <p>{item.snippet.title} </p>
-                                                <p>{item.snippet.channelTitle} </p>
+                                                <p className='text-slate-600 text-sm'>{item.snippet.channelTitle} </p>
                                             </div>
                                         </a>
                                     </>)
