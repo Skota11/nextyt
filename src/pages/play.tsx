@@ -235,7 +235,7 @@ export default function Home() {
                                 result ? result.map((item: { id: { videoId: any; }; snippet: { thumbnails: { high: { url: string | undefined; }; }; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; channelTitle: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => {
                                     return (<>
                                         <hr />
-                                        <a className='block my-4 flex gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
+                                        <a className='block my-4 flex items-start gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
                                             <Image src={`https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`} alt="" width={120} height={67.5} className='inline rounded-md' />
                                             <div className='inline'>
                                                 <p>{item.snippet.title} </p>

@@ -155,7 +155,7 @@ export default function Home() {
                                 reverse.map((data: any) => {
                                     return <>
                                         <a href="#" onClick={() => { Select(data.id); }}>
-                                            <div className='flex gap-x-4'>
+                                            <div className='flex items-start gap-x-4'>
                                                 <Image src={`https://i.ytimg.com/vi/${data.id}/mqdefault.jpg`} alt="" width={120} height={67.5} className='inline rounded-md' />
                                                 <p className='text-sm inline'>{data.video.title}</p>
                                             </div>

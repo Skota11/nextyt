@@ -198,7 +198,7 @@ export default function Home() {
                       reverse.map((history: any) => {
                         return <>
                           <Link href={`/play?watch=${history.id}`}>
-                            <div className='flex gap-x-4'>
+                            <div className='flex items-start gap-x-4'>
                               <Image src={`https://i.ytimg.com/vi/${history.id}/mqdefault.jpg`} alt="" width={120} height={67.5} className='inline rounded-md' />
                               <p className='text-sm inline'>{history.video.title}</p>
                             </div>
