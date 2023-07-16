@@ -150,7 +150,9 @@ export default function Home() {
                         <button onClick={() => { onClickDelete(); }}><FontAwesomeIcon icon={faTrash} /></button>
                         <div className='grid gap-4 my-4'>
                             {reverse.length == 0 ? <>
-                                <Skeleton variant="rectangular" width={120} height={67.5} className='rounded-md' />
+                                <div className='flex items-start gap-x-4 break-all'>
+                                    <Skeleton width={120} height={67.5} className='rounded-md' />
+                                </div>
                             </> :
                                 reverse.map((data: any) => {
                                     return <>
