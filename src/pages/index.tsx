@@ -191,7 +191,7 @@ export default function Home() {
                 <div className='grid gap-4 my-4'>
                   {
                     reverse.length == 0 ? <>
-                      <Skeleton variant="rectangular" width={210} height={60} />
+                      <Skeleton variant="rectangular" width={120} height={67.5} className='rounded-md' />
                     </>
                       :
                       reverse.map((history: any) => {
