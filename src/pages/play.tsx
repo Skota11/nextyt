@@ -12,6 +12,8 @@ import { supabase } from "../utils/supabase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { faChevronDown, faChevronUp, faPlay, faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Drawer } from '@mui/material';
+import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 
 export default function Home() {
     const router = useRouter()
@@ -20,6 +22,7 @@ export default function Home() {
     const [searchQ, setserachQ] = useState("")
     const [result, setResult]: any = useState();
     const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "", description: "" });
+    const [statistics, setStatistic] = useState({ viewCount: "", likeCount: "", commentCount: "" });
     const [ytid, setYtid] = useState(watch);
     const [selectPlaylist, setSelectPlaylist] = useState();
 
@@ -50,8 +53,9 @@ export default function Home() {
         }
     }
     const getVideo = async (id: any) => {
-        const res = await (await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo`)).json();
+        const res = await (await fetch(`https://www.googleapis.com/youtube/v3/videos?part=id,snippet,statistics&id=${id}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo`)).json();
         setAbout(res.items[0].snippet)
+        setStatistic(res.items[0].statistics);
 
         if (currentUser.id !== '') {
             if (watchHistories.length < 50) {
@@ -159,6 +163,13 @@ export default function Home() {
 
     const [addPlaylistMenuOpened, setaddPlaylistMenuOpened] = useState(false);
     const [InfoMenuOpened, setInfoMenuOpened] = useState(false);
+
+    //drawer
+    const [openedDrawer, setOpenedDrawer] = useState(false);
+
+    const toggleOnCloseDrawer = () => {
+        setOpenedDrawer(false);
+    }
     return (
         <>
             <main>
@@ -175,42 +186,61 @@ export default function Home() {
                 </div>
                 <div className='px-4 py-2 '>
                     <div>
-                        <h1><a className='break-all' href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
-                        <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm text-slate-600' rel="noopener noreferrer">{about.channelTitle}</a>
-                    </div>
-                    <div className='flex gap-x-2'>
-                        {
-                            ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄<span className='ml-2'>{InfoMenuOpened ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span></button> : <></>
-                        }
-                        {
-                            currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリスト<FontAwesomeIcon className='ml-2' icon={faPlus} /></button> : <></>
-                        }
-                    </div>
-                    {
-                        InfoMenuOpened ?
-                            <>
-                                <div className='mt-2 border-l-4 border-current pl-4'>
-                                    <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
+                        <h1 className='my-2'><a onClick={() => { setOpenedDrawer(true) }} className='break-all text-lg ' href={'#'}>{about.title}</a></h1>
+                        <Drawer
+                            anchor={'bottom'}
+                            open={openedDrawer}
+                            onClose={toggleOnCloseDrawer}
+                        >
+                            <button className='mt-4' onClick={() => { setOpenedDrawer(false) }}>閉じる</button>
+                            <div className='p-8'>
+                                <h1 className='text-xl'>{about.title}</h1>
+                                <p className='text-lg text-slate-600'>{about.channelTitle}</p>
+                                <div className='my-2'>
+                                    <p>視聴回数 : {statistics.viewCount}</p>
+                                    <p>高評価数 : {statistics.likeCount}</p>
+                                    <p>コメント数 : {statistics.commentCount}</p>
                                 </div>
-                            </> : <></>
-                    }
-                    {
-                        addPlaylistMenuOpened ?
-                            <>
-                                <div className='mt-2 border-l-4 border-current pl-4'>
-                                    プレイリスト:
-                                    <select onChange={(e: any) => { setSelectPlaylist(e.target.value) }} name="playlist" id="playlistDom">
-                                        <option value="">選択していません</option>
-                                        {
-                                            myPlaylists.map((playlist: any) => {
-                                                return <option key={playlist.id} value={playlist.id}>{playlist.name}</option>
-                                            })
-                                        }
-                                    </select>
-                                    <p><button className='border-2 p-2 rounded-lg text-xs border-current mt-2' onClick={() => { addPlaylist(); }}>追加</button></p>
+                                <div>
+                                    <a href={`https://youtu.be/${ytid}`} >Youtube<FontAwesomeIcon className='ml-2' icon={faYoutube} /></a>
                                 </div>
-                            </> : <></>
-                    }
+                                <div className='my-4'>
+                                    {
+                                        ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄<span className='ml-2'>{InfoMenuOpened ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span></button> : <></>
+                                    }
+                                    {
+                                        currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリスト<FontAwesomeIcon className='ml-2' icon={faPlus} /></button> : <></>
+                                    }
+                                </div>
+                                {
+                                    addPlaylistMenuOpened ?
+                                        <>
+                                            <div className='my-2'>
+                                                プレイリスト:
+                                                <select onChange={(e: any) => { setSelectPlaylist(e.target.value) }} name="playlist" id="playlistDom">
+                                                    <option value="">選択していません</option>
+                                                    {
+                                                        myPlaylists.map((playlist: any) => {
+                                                            return <option key={playlist.id} value={playlist.id}>{playlist.name}</option>
+                                                        })
+                                                    }
+                                                </select>
+                                                <p><button className='border-2 p-2 rounded-lg text-xs border-current mt-2' onClick={() => { addPlaylist(); }}>追加</button></p>
+                                            </div>
+                                        </> : <></>
+                                }
+                                {
+                                    InfoMenuOpened ?
+                                        <>
+                                            <div className='mt-2 border-l-4 border-current pl-4'>
+                                                <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
+                                            </div>
+                                        </> : <></>
+                                }
+                            </div>
+                        </Drawer>
+                    </div>
+
                 </div>
                 <div className='flex place-content-center'>
                     <div className='lg:w-3/4' id="検索系">

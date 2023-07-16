@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
 import { useRouter } from 'next/router'
 
-import { Skeleton } from '@mui/material';
+import { Drawer, Skeleton } from '@mui/material';
 
 import { supabase } from "../../utils/supabase";
 
@@ -14,12 +14,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { faChevronDown, faChevronUp, faPlay, faSearch, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Swal from 'sweetalert2';
+import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 
 export default function Home() {
     const router = useRouter()
     const { id }: any = router.query
 
     const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "", description: "" });
+    const [statistics, setStatistic] = useState({ viewCount: "", likeCount: "", commentCount: "" });
     const [playlistData, setPlaylistData] = useState({ name: "", content: [] });
     const [ytid, setYtid] = useState();
 
@@ -33,8 +35,9 @@ export default function Home() {
     };
 
     const getVideo = async (id: any) => {
-        const res = await (await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${id}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo`)).json();
+        const res = await (await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${id}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo`)).json();
         setAbout(res.items[0].snippet)
+        setStatistic(res.items[0].statistics);
     }
     const Select = async (id: any) => {
         setYtid(id);
@@ -111,6 +114,13 @@ export default function Home() {
 
     const [TitleName, setTitleName] = useState(playlistData.name);
     const [InfoMenuOpened, setInfoMenuOpened] = useState(false);
+
+    //drawer
+    const [openedDrawer, setOpenedDrawer] = useState(false);
+
+    const toggleOnCloseDrawer = () => {
+        setOpenedDrawer(false);
+    }
     return (
         <>
             <main>
@@ -126,23 +136,42 @@ export default function Home() {
                     </div>
                 </div>
                 <div className='px-4 py-2 '>
-                    <h1><a className='break-all' href={`https://www.youtube.com/watch?v=${ytid}`}>{about.title}</a></h1>
-                    <a href={`https://www.youtube.com/channel/${about.channelId}`} target="_blank" className='text-sm text-slate-600' rel="noopener noreferrer">{about.channelTitle}</a>
                     <div>
-                        {
-                            ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄<span className='ml-2'>{InfoMenuOpened ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span></button> : <></>
-                        }
-                    </div>
-                    {
-                        InfoMenuOpened ?
-                            <>
-                                <div className='mt-2 border-l-4 border-current pl-4'>
-                                    <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
+                        <h1 className='my-2'><a onClick={() => { setOpenedDrawer(true) }} className='break-all text-lg ' href={'#'}>{about.title}</a></h1>
+                        <Drawer
+                            anchor={'bottom'}
+                            open={openedDrawer}
+                            onClose={toggleOnCloseDrawer}
+                        >
+                            <button className='mt-4' onClick={() => { setOpenedDrawer(false) }}>閉じる</button>
+                            <div className='p-8'>
+                                <h1 className='text-xl'>{about.title}</h1>
+                                <p className='text-lg text-slate-600'>{about.channelTitle}</p>
+                                <div className='my-2'>
+                                    <p>視聴回数 : {statistics.viewCount}</p>
+                                    <p>高評価数 : {statistics.likeCount}</p>
+                                    <p>コメント数 : {statistics.commentCount}</p>
                                 </div>
-                            </> :
-                            <>
-                            </>
-                    }
+                                <div>
+                                    <a href={`https://youtu.be/${ytid}`} >Youtube<FontAwesomeIcon className='ml-2' icon={faYoutube} /></a>
+                                </div>
+                                <div className='my-4'>
+                                    {
+                                        ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄<span className='ml-2'>{InfoMenuOpened ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span></button> : <></>
+                                    }
+                                </div>
+                                {
+                                    InfoMenuOpened ?
+                                        <>
+                                            <div className='mt-2 border-l-4 border-current pl-4'>
+                                                <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
+                                            </div>
+                                        </> : <></>
+                                }
+                            </div>
+                        </Drawer>
+                    </div>
+
                 </div>
                 <div className='flex place-content-center'>
                     <div className='lg:w-3/4 px-4'>
