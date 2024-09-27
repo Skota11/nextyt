@@ -26,6 +26,10 @@ export default function Home() {
     const [ytid, setYtid] = useState(watch);
     const [selectPlaylist, setSelectPlaylist] = useState();
 
+    //player
+    const [YTPlayer , setPlayer]:any = useState();
+    const [YTspeed , setYTSpeed] = useState(1);
+
     const opts = {
         width: "560",
         height: "315",
@@ -156,6 +160,11 @@ export default function Home() {
         }
     }, [])
 
+    //Player
+    const _onReady = (event: { target: any }) => {
+        setPlayer(event.target)
+    }
+
     //検索履歴
     const [searchHistories, setSearchHistories]: any = useState([]);
     const [watchHistories, setWatchHistories]: any = useState([]);
@@ -177,9 +186,11 @@ export default function Home() {
                     <div className='wrap'>
                         <div className='video-container'>
                             <div className='video flex place-content-center rounded-lg'>
-                                <YouTube videoId={ytid}
+                                {ytid? <><YouTube videoId={ytid}
                                     opts={opts}
-                                />
+                                    onReady={_onReady}
+                                /></> : <div className='place-content-center flex h-full'><p className='text-white text-2xl'>動画が選択されていません</p></div>}
+                                
                             </div>
                         </div>
                     </div>
@@ -188,9 +199,12 @@ export default function Home() {
                     <div>
                         <h1 className='my-2'><a onClick={() => { setOpenedDrawer(true) }} className='break-all text-lg ' href={'#'}>{about.title}</a></h1>
                         <Drawer
-                            anchor={'bottom'}
+                            anchor={'right'}
                             open={openedDrawer}
                             onClose={toggleOnCloseDrawer}
+                            PaperProps={{
+                                sx: { width: "100%" , maxWidth: "512px" },
+                              }}
                         >
                             <button className='mt-4' onClick={() => { setOpenedDrawer(false) }}>閉じる</button>
                             <div className='p-8'>
@@ -201,8 +215,8 @@ export default function Home() {
                                     <p>高評価数 : {statistics.likeCount}</p>
                                     <p>コメント数 : {statistics.commentCount}</p>
                                 </div>
-                                <div>
-                                    <a href={`https://youtu.be/${ytid}`} >Youtube<FontAwesomeIcon className='ml-2' icon={faYoutube} /></a>
+                                <div >
+                                    <a className='' href={`https://youtu.be/${ytid}`} ><FontAwesomeIcon className='ml-2' icon={faYoutube} />  Youtubeで開く</a>
                                 </div>
                                 <div className='my-4'>
                                     {
@@ -232,7 +246,7 @@ export default function Home() {
                                 {
                                     InfoMenuOpened ?
                                         <>
-                                            <div className='mt-2 border-l-4 border-current pl-4'>
+                                            <div className='p-4 rounded-lg bg-gray-100'>
                                                 <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
                                             </div>
                                         </> : <></>
@@ -246,6 +260,11 @@ export default function Home() {
                     <div className='lg:w-3/4' id="検索系">
                         <div className='mb-2 flex place-content-center'>
                             <div>
+                                <div className='my-2 flex place-content-center gap-x-2'>
+                                    <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(1.5) }}>x1.5</button>
+                                    <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(1) }}>x1</button>
+                                    <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(2) }}>x2</button>
+                                </div>
                                 <input type="text" onKeyPress={(e) => {
                                     if (e.code == "Enter") {
                                         getSearch()
