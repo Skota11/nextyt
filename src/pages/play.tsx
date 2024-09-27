@@ -272,13 +272,6 @@ export default function Home() {
                                 }} className='mr-4 p-2 rounded-md border-2 outline-0' placeholder='検索するワードを入力' onChange={(e) => { setserachQ(e.target.value) }} value={searchQ} /><button onClick={() => { getSearch() }} className='p-2 rounded-lg bg-gray-100'><FontAwesomeIcon icon={faSearch} className='mr-2' /> 検索</button>
                             </div>
                         </div>
-                        <div className='flex place-content-center gap-x-4'>
-                            {searchHistories.map((history: any) => {
-                                return <>
-                                    {<button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { await setserachQ(history); }}>{history}</button>}
-                                </>
-                            })}
-                        </div>
                         <div className='mb-4 mt-2 px-4'>
                             {
                                 result ? result.map((item: { id: { videoId: any; }; snippet: { thumbnails: { high: { url: string | undefined; }; }; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; channelTitle: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => {
