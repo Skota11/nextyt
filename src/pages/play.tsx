@@ -11,7 +11,7 @@ import { supabase } from "../utils/supabase";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faChevronDown, faChevronUp, faPlay, faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { fa1, fa2, faChevronDown, faChevronUp, faForward, faGripLinesVertical, faPlay, faPlus, faSearch, faVolumeHigh, faVolumeLow, faVolumeXmark, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Drawer } from '@mui/material';
 import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 
@@ -28,7 +28,7 @@ export default function Home() {
 
     //player
     const [YTPlayer , setPlayer]:any = useState();
-    const [YTspeed , setYTSpeed] = useState(1);
+    const [muted , setMuted] = useState(false);
 
     const opts = {
         width: "560",
@@ -163,7 +163,17 @@ export default function Home() {
     //Player
     const _onReady = (event: { target: any }) => {
         setPlayer(event.target)
+        event.target.playVideo()
     }
+    useEffect(() => {
+        if(YTPlayer){
+            if(muted){
+                YTPlayer.mute()
+            }else{
+                YTPlayer.unMute()
+            }
+        }
+    } , [muted])
 
     //検索履歴
     const [searchHistories, setSearchHistories]: any = useState([]);
@@ -197,7 +207,7 @@ export default function Home() {
                 </div>
                 <div className='px-4 py-2 '>
                     <div>
-                        <h1 className='my-2'><a onClick={() => { setOpenedDrawer(true) }} className='break-all text-lg ' href={'#'}>{about.title}</a></h1>
+                        <h1 className='my-2'><button onClick={() => { setOpenedDrawer(true) }} className='break-all text-lg '>{about.title}</button></h1>
                         <Drawer
                             anchor={'right'}
                             open={openedDrawer}
@@ -246,8 +256,8 @@ export default function Home() {
                                 {
                                     InfoMenuOpened ?
                                         <>
-                                            <div className='p-4 rounded-lg bg-gray-100'>
-                                                <div className='text-sm'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
+                                            <div className='p-4 rounded-lg bg-gray-100 '>
+                                                <div className='text-sm break-all w-full'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
                                             </div>
                                         </> : <></>
                                 }
@@ -260,11 +270,19 @@ export default function Home() {
                     <div className='lg:w-3/4' id="検索系">
                         <div className='mb-2 flex place-content-center'>
                             <div>
+                                {ytid !== undefined ? 
                                 <div className='my-2 flex place-content-center gap-x-2'>
-                                    <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(1.5) }}>x1.5</button>
-                                    <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(1) }}>x1</button>
-                                    <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(2) }}>x2</button>
-                                </div>
+                                <FontAwesomeIcon className='py-2' icon={faForward} />
+                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(1) }}><FontAwesomeIcon icon={faXmark} /><FontAwesomeIcon icon={fa1} /></button>
+                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(2) }}><FontAwesomeIcon icon={faXmark} /><FontAwesomeIcon icon={fa2} /></button>
+                            <p className='py-2'><FontAwesomeIcon icon={faGripLinesVertical} /></p>
+                            {muted ? 
+                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setMuted(false) }}><FontAwesomeIcon icon={faVolumeXmark} /></button>
+                            :
+                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setMuted(true) }}><FontAwesomeIcon icon={faVolumeHigh} /></button>
+                            }
+                        </div>
+                                : <></>}
                                 <input type="text" onKeyPress={(e) => {
                                     if (e.code == "Enter") {
                                         getSearch()
