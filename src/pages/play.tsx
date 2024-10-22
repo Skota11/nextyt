@@ -27,8 +27,8 @@ export default function Home() {
     const [selectPlaylist, setSelectPlaylist] = useState();
 
     //player
-    const [YTPlayer , setPlayer]:any = useState();
-    const [muted , setMuted] = useState(false);
+    const [YTPlayer, setPlayer]: any = useState();
+    const [muted, setMuted] = useState(false);
 
     const opts = {
         width: "560",
@@ -40,7 +40,7 @@ export default function Home() {
     };
 
     const getSearch = async () => {
-        const res = await (await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchQ}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo&maxResults=50&type=video`)).json();
+        const res = await (await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchQ}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo&maxResults=50&type=channel&type=video`)).json();
         setResult(res.items)
         if (currentUser.id !== '') {
             if (searchHistories.length < 6) {
@@ -166,14 +166,14 @@ export default function Home() {
         event.target.playVideo()
     }
     useEffect(() => {
-        if(YTPlayer){
-            if(muted){
+        if (YTPlayer) {
+            if (muted) {
                 YTPlayer.mute()
-            }else{
+            } else {
                 YTPlayer.unMute()
             }
         }
-    } , [muted])
+    }, [muted])
 
     //検索履歴
     const [searchHistories, setSearchHistories]: any = useState([]);
@@ -196,11 +196,11 @@ export default function Home() {
                     <div className='wrap'>
                         <div className='video-container'>
                             <div className='video flex place-content-center rounded-lg'>
-                                {ytid? <><YouTube videoId={ytid}
+                                {ytid ? <><YouTube videoId={ytid}
                                     opts={opts}
                                     onReady={_onReady}
-                                /></> : <div className='place-content-center flex h-full'><p className='text-white text-2xl'>動画が選択されていません</p></div>}
-                                
+                                /></> : <div className=''><p className='text-white text-2xl'>動画が選択されていません</p></div>}
+
                             </div>
                         </div>
                     </div>
@@ -213,8 +213,8 @@ export default function Home() {
                             open={openedDrawer}
                             onClose={toggleOnCloseDrawer}
                             PaperProps={{
-                                sx: { width: "100%" , maxWidth: "512px" },
-                              }}
+                                sx: { width: "100%", maxWidth: "512px" },
+                            }}
                         >
                             <button className='mt-4' onClick={() => { setOpenedDrawer(false) }}>閉じる</button>
                             <div className='p-8'>
@@ -270,19 +270,19 @@ export default function Home() {
                     <div className='lg:w-3/4' id="検索系">
                         <div className='mb-2 flex place-content-center'>
                             <div>
-                                {ytid !== undefined ? 
-                                <div className='my-2 flex place-content-center gap-x-2'>
-                                <FontAwesomeIcon className='py-2' icon={faForward} />
-                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(1) }}><FontAwesomeIcon icon={faXmark} /><FontAwesomeIcon icon={fa1} /></button>
-                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(2) }}><FontAwesomeIcon icon={faXmark} /><FontAwesomeIcon icon={fa2} /></button>
-                            <p className='py-2'><FontAwesomeIcon icon={faGripLinesVertical} /></p>
-                            {muted ? 
-                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setMuted(false) }}><FontAwesomeIcon icon={faVolumeXmark} /></button>
-                            :
-                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setMuted(true) }}><FontAwesomeIcon icon={faVolumeHigh} /></button>
-                            }
-                        </div>
-                                : <></>}
+                                {ytid !== undefined ?
+                                    <div className='my-2 flex place-content-center gap-x-2'>
+                                        <FontAwesomeIcon className='py-2' icon={faForward} />
+                                        <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(1) }}><FontAwesomeIcon icon={faXmark} /><FontAwesomeIcon icon={fa1} /></button>
+                                        <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { YTPlayer.setPlaybackRate(2) }}><FontAwesomeIcon icon={faXmark} /><FontAwesomeIcon icon={fa2} /></button>
+                                        <p className='py-2'><FontAwesomeIcon icon={faGripLinesVertical} /></p>
+                                        {muted ?
+                                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setMuted(false) }}><FontAwesomeIcon icon={faVolumeXmark} /></button>
+                                            :
+                                            <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setMuted(true) }}><FontAwesomeIcon icon={faVolumeHigh} /></button>
+                                        }
+                                    </div>
+                                    : <></>}
                                 <input type="text" onKeyPress={(e) => {
                                     if (e.code == "Enter") {
                                         getSearch()
@@ -292,17 +292,31 @@ export default function Home() {
                         </div>
                         <div className='mb-4 mt-2 px-4'>
                             {
-                                result ? result.map((item: { id: { videoId: any; }; snippet: { thumbnails: { high: { url: string | undefined; }; }; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; channelTitle: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => {
-                                    return (<>
-                                        <hr />
-                                        <a className='block my-4 break-all flex items-start gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
-                                            <Image src={`https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`} alt="" width={120} height={67.5} className='inline rounded-md' />
-                                            <div className='inline'>
-                                                <p>{item.snippet.title} </p>
-                                                <p className='text-slate-600 text-sm'>{item.snippet.channelTitle} </p>
-                                            </div>
-                                        </a>
-                                    </>)
+                                result ? result.map((item: { id: { kind: string, videoId: string; }; snippet: { thumbnails: { high: { url: any; }; }; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; channelTitle: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => {
+                                    if (item.id.kind == "youtube#video") {
+                                        return (<>
+                                            <hr />
+                                            <a className='block my-4 break-all flex items-start gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
+                                                <Image src={`https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`} alt="" width={120 * 1.5} height={67.5 * 1.5} className='inline rounded-md' />
+                                                <div className='inline'>
+                                                    <p>{item.snippet.title} </p>
+                                                    <p className='text-slate-600 text-sm'>{item.snippet.channelTitle} </p>
+                                                </div>
+                                            </a>
+                                        </>)
+                                    } else {
+                                        return (<>
+                                            {/* <hr />
+                                            <a className='block my-4 break-all flex items-start gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
+                                                <Image src={item.snippet.thumbnails.high.url} alt="" width={120} height={120} className='inline rounded-full' />
+                                                <div className='inline'>
+                                                    <p>{item.snippet.title} </p>
+                                                    <p className='text-slate-600 text-sm'>{item.snippet.channelTitle} </p>
+                                                </div>
+                                            </a> */}
+                                        </>)
+                                    }
+
                                 })
                                     :
                                     <></>

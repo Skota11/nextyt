@@ -97,7 +97,7 @@ export default function Home() {
     }).then((result) => {
       if (result.isConfirmed) {
         if (result) {
-          toast.success("プレイリストを作成しました")
+          router.reload()
         }
       }
     })
