@@ -1,30 +1,27 @@
 // 'use client'
-import Image from 'next/image'
 import YouTube from "react-youtube";
 import { toast } from "react-toastify";
-import Link from 'next/link';
-
 import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactFragment, ReactPortal, useEffect, useState } from "react";
 import { useRouter } from 'next/router'
-
 import { supabase } from "../utils/supabase";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { fa1, fa2, faChevronDown, faChevronUp, faForward, faGripLinesVertical, faPlay, faPlus, faSearch, faVolumeHigh, faVolumeLow, faVolumeXmark, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { fa1, fa2, faChevronDown, faChevronUp, faForward, faGripLinesVertical, faPlay, faPlus, faSearch, faThumbsUp, faVolumeHigh, faVolumeLow, faVolumeXmark, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { Drawer } from '@mui/material';
 import { faYoutube } from '@fortawesome/free-brands-svg-icons';
+import Search from '@/components/search';
+import dayjs from 'dayjs'
+import toJaNum from '@/utils/num2ja';
+import { faEye } from '@fortawesome/free-regular-svg-icons';
+import { Select, Option } from "@material-tailwind/react";
 
 export default function Home() {
     const router = useRouter()
     const { watch }: any = router.query
 
-    const [searchQ, setserachQ] = useState("")
-    const [result, setResult]: any = useState();
-    const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "", description: "" });
+    const [about, setAbout] = useState({ title: "", channelId: "", channelTitle: "", description: "", publishedAt: "" });
     const [statistics, setStatistic] = useState({ viewCount: "", likeCount: "", commentCount: "" });
     const [ytid, setYtid] = useState(watch);
-    const [selectPlaylist, setSelectPlaylist] = useState();
+    const [selectPlaylist, setSelectPlaylist] = useState("");
 
     //player
     const [YTPlayer, setPlayer]: any = useState();
@@ -38,24 +35,6 @@ export default function Home() {
         },
         host: "https://www.youtube-nocookie.com"
     };
-
-    const getSearch = async () => {
-        const res = await (await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchQ}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo&maxResults=50&type=channel&type=video`)).json();
-        setResult(res.items)
-        if (currentUser.id !== '') {
-            if (searchHistories.length < 6) {
-                searchHistories.push(searchQ)
-            } else {
-                searchHistories.push(searchQ)
-                searchHistories.shift();
-            }
-            let { error } = await supabase.from('searchHistory').upsert({
-                uid: currentUser.id,
-                content: searchHistories
-            })
-            getSearchHistory(currentUser.id)
-        }
-    }
     const getVideo = async (id: any) => {
         const res = await (await fetch(`https://www.googleapis.com/youtube/v3/videos?part=id,snippet,statistics&id=${id}&key=AIzaSyC1KMsyjrnEfHJ3xnQtPX0DSxWHfyjUBeo`)).json();
         setAbout(res.items[0].snippet)
@@ -76,10 +55,6 @@ export default function Home() {
             })
         }
     }
-    const Select = async (id: any) => {
-        setYtid(id);
-        getVideo(id);
-    }
 
     //Auth系の処理
     const [currentUser, setcurrentUser] = useState({ email: '', id: '' });
@@ -92,24 +67,9 @@ export default function Home() {
             const { data: { user } }: { data: { user: any } } = await supabase.auth.getUser()
             setcurrentUser(user)
 
-            await getSearchHistory(user.id);
             await getWatchHistory(user.id);
             await getMyPlaylists(user.id);
         }
-    }
-    const getSearchHistory = async (id: any) => {
-        let { data }: { data: any } = await supabase
-            .from('searchHistory')
-            .select("content")
-            .eq('uid', id);
-
-        if (data.length == 0) {
-            let { error } = await supabase.from('searchHistory').upsert({
-                uid: id,
-                content: []
-            })
-        }
-        setSearchHistories(data[0].content);
     }
     const getWatchHistory = async (id: any) => {
         let { data }: { data: any } = await supabase
@@ -173,16 +133,13 @@ export default function Home() {
                 YTPlayer.unMute()
             }
         }
-    }, [muted])
+    }, [muted, YTPlayer])
 
     //検索履歴
-    const [searchHistories, setSearchHistories]: any = useState([]);
     const [watchHistories, setWatchHistories]: any = useState([]);
-    const [myPlaylists, setMyPlaylists]: any = useState();
+    const [myPlaylists, setMyPlaylists]: any = useState([]);
 
     const [addPlaylistMenuOpened, setaddPlaylistMenuOpened] = useState(false);
-    const [InfoMenuOpened, setInfoMenuOpened] = useState(false);
-
     //drawer
     const [openedDrawer, setOpenedDrawer] = useState(false);
 
@@ -209,7 +166,7 @@ export default function Home() {
                     <div>
                         <h1 className='my-2'><button onClick={() => { setOpenedDrawer(true) }} className='break-all text-lg '>{about.title}</button></h1>
                         <Drawer
-                            anchor={'right'}
+                            anchor={'left'}
                             open={openedDrawer}
                             onClose={toggleOnCloseDrawer}
                             PaperProps={{
@@ -220,18 +177,16 @@ export default function Home() {
                             <div className='p-8'>
                                 <h1 className='text-xl'>{about.title}</h1>
                                 <p className='text-lg text-slate-600'>{about.channelTitle}</p>
-                                <div className='my-2'>
-                                    <p>視聴回数 : {statistics.viewCount}</p>
-                                    <p>高評価数 : {statistics.likeCount}</p>
-                                    <p>コメント数 : {statistics.commentCount}</p>
+                                <div className='flex gap-x-4 my-4'>
+                                    <div className='text-lg'>{dayjs(about.publishedAt).format('YYYY年MM月DD日')}</div>
+
+                                    <div className='text-lg'><FontAwesomeIcon className='mr-2' icon={faEye} />{toJaNum(statistics.viewCount)}</div>
+                                    <div className='text-lg'><FontAwesomeIcon className='mr-2' icon={faThumbsUp} /> {toJaNum(statistics.likeCount)}</div>
                                 </div>
                                 <div >
                                     <a className='' href={`https://youtu.be/${ytid}`} ><FontAwesomeIcon className='ml-2' icon={faYoutube} />  Youtubeで開く</a>
                                 </div>
                                 <div className='my-4'>
-                                    {
-                                        ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setInfoMenuOpened(!InfoMenuOpened) }}>概要欄<span className='ml-2'>{InfoMenuOpened ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}</span></button> : <></>
-                                    }
                                     {
                                         currentUser.email !== '' && ytid !== undefined ? <button className='border-2 p-2 rounded-lg text-xs border-current' onClick={async () => { setaddPlaylistMenuOpened(!addPlaylistMenuOpened) }}>プレイリスト<FontAwesomeIcon className='ml-2' icon={faPlus} /></button> : <></>
                                     }
@@ -240,27 +195,22 @@ export default function Home() {
                                     addPlaylistMenuOpened ?
                                         <>
                                             <div className='my-2'>
-                                                プレイリスト:
-                                                <select onChange={(e: any) => { setSelectPlaylist(e.target.value) }} name="playlist" id="playlistDom">
-                                                    <option value="">選択していません</option>
+                                                <Select onChange={(e: any) => { setSelectPlaylist(e.target.value) }} name="playlist" id="playlistDom" label="プレイリストを選択...">
                                                     {
                                                         myPlaylists.map((playlist: any) => {
-                                                            return <option key={playlist.id} value={playlist.id}>{playlist.name}</option>
+                                                            return <Option key={playlist.id} value={playlist.id}>{playlist.name}</Option>
                                                         })
                                                     }
-                                                </select>
+                                                </Select>
                                                 <p><button className='border-2 p-2 rounded-lg text-xs border-current mt-2' onClick={() => { addPlaylist(); }}>追加</button></p>
                                             </div>
                                         </> : <></>
                                 }
-                                {
-                                    InfoMenuOpened ?
-                                        <>
-                                            <div className='p-4 rounded-lg bg-gray-100 '>
-                                                <div className='text-sm break-all w-full'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
-                                            </div>
-                                        </> : <></>
-                                }
+
+                                <div className='p-4 rounded-lg bg-gray-100 '>
+                                    <div className='text-sm break-all w-full'>{about.description.split(/(\n)/).map((v: any, i: any) => (i & 1 ? <br key={i} /> : v))}</div>
+                                </div>
+
                             </div>
                         </Drawer>
                     </div>
@@ -283,45 +233,10 @@ export default function Home() {
                                         }
                                     </div>
                                     : <></>}
-                                <input type="text" onKeyPress={(e) => {
-                                    if (e.code == "Enter") {
-                                        getSearch()
-                                    }
-                                }} className='mr-4 p-2 rounded-md border-2 outline-0' placeholder='検索するワードを入力' onChange={(e) => { setserachQ(e.target.value) }} value={searchQ} /><button onClick={() => { getSearch() }} className='p-2 rounded-lg bg-gray-100'><FontAwesomeIcon icon={faSearch} className='mr-2' /> 検索</button>
+
                             </div>
                         </div>
-                        <div className='mb-4 mt-2 px-4'>
-                            {
-                                result ? result.map((item: { id: { kind: string, videoId: string; }; snippet: { thumbnails: { high: { url: any; }; }; title: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; channelTitle: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | PromiseLikeOfReactNode | null | undefined; }; }) => {
-                                    if (item.id.kind == "youtube#video") {
-                                        return (<>
-                                            <hr />
-                                            <a className='block my-4 break-all flex items-start gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
-                                                <Image src={`https://i.ytimg.com/vi/${item.id.videoId}/mqdefault.jpg`} alt="" width={120 * 1.5} height={67.5 * 1.5} className='inline rounded-md' />
-                                                <div className='inline'>
-                                                    <p>{item.snippet.title} </p>
-                                                    <p className='text-slate-600 text-sm'>{item.snippet.channelTitle} </p>
-                                                </div>
-                                            </a>
-                                        </>)
-                                    } else {
-                                        return (<>
-                                            {/* <hr />
-                                            <a className='block my-4 break-all flex items-start gap-4' href='#' onClick={() => { Select(item.id.videoId); }}>
-                                                <Image src={item.snippet.thumbnails.high.url} alt="" width={120} height={120} className='inline rounded-full' />
-                                                <div className='inline'>
-                                                    <p>{item.snippet.title} </p>
-                                                    <p className='text-slate-600 text-sm'>{item.snippet.channelTitle} </p>
-                                                </div>
-                                            </a> */}
-                                        </>)
-                                    }
-
-                                })
-                                    :
-                                    <></>
-                            }
-                        </div>
+                        <Search setYtid={setYtid} getVideo={getVideo} />
                     </div>
                 </div>
             </main>

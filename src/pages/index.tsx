@@ -164,7 +164,7 @@ export default function Home() {
           <OAuth />
           <h1 className='text-center'>もしくはログインせずに使う</h1>
           <div className='flex place-content-center'>
-            <Link href="/play" className='my-8 rounded-full border-2 p-4 text-lg border-current' ><FontAwesomeIcon icon={faPlay} bounce className='mr-2' /> Play</Link>
+            <Link href="/play" className='my-8 rounded-full border-2 p-4 text-lg border-current' ><FontAwesomeIcon icon={faPlay} className='mr-2' /> Play</Link>
           </div>
         </>
         :
@@ -173,7 +173,7 @@ export default function Home() {
             <div className='p-4 max-w-screen-xl m-auto'>
               <div className='max-w-screen-lg m-auto mt-8 mb-4'>
                 <p className='mb-8 text-lg^'><FontAwesomeIcon icon={faSearch} className='mr-2' />検索して再生</p>
-                <Link href="/play" className='my-8 rounded-full border-2 p-4 text-lg border-current' ><FontAwesomeIcon icon={faPlay} bounce className='mr-2' /> Play</Link>
+                <Link href="/play" className='my-8 rounded-full border-2 p-4 text-lg border-current' ><FontAwesomeIcon icon={faPlay} className='mr-2' /> Play</Link>
               </div>
               <div className='mt-12 mb-4'>
                 <h1 className='text-lg'><FontAwesomeIcon icon={faList} className='mr-2' />プレイリスト</h1>
