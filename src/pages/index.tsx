@@ -71,6 +71,7 @@ export default function Home() {
 
   // HeaderコンポーネントがレンダリングされたときにgetCurrentUser関数が実行される
   useEffect(() => {
+    window.location.assign('https://app-nextyt.vercel.app')
     getCurrentUser()
   }, [])
 
@@ -156,10 +157,6 @@ export default function Home() {
     router.reload()
 
   }
-  const routeNewApp = () => {
-    window.location.assign('https://app-nextyt.vercel.app')
-    return <></>
-  }
   return (
     <>
 
@@ -170,7 +167,6 @@ export default function Home() {
           <div className='flex place-content-center'>
             <Link href="/play" className='my-8 rounded-full border-2 p-4 text-lg border-current' ><FontAwesomeIcon icon={faPlay} className='mr-2' /> Play</Link>
           </div>
-          {routeNewApp()}
         </>
         :
         <>
